@@ -6,12 +6,16 @@ class Config:
     SQLACHEMY_DATABASE_URI = 'mysql://root"mysql@lacalhost/info'
     SQLACHEMY_TRACK_MODIFYCATIONS = False
 
+
+    # 定义redis 的主机和port，便于修改redis的地址
+    REDIS_HOST = '127.0.0.1'
+    REDIS_PORT = 6379
     # 5.2 配置状态保持存储的session信息
     SESSION_TYPE = 'redis'
 #     5.3 配置session签名
     SESSION_USE_SIGNER =True
     #5.4构造redis实例
-    SESSION_REDIS = StrictRedis(host='127.0.0.1',port=6379)
+    SESSION_REDIS = StrictRedis(host=REDIS_HOST,port=REDIS_PORT)
 
     #5.5配置session 的有效时间
     PERMANENT_SESSION_LIFETIME = 86400
