@@ -5,11 +5,21 @@ from logging.handlers import RotatingFileHandler
 # 5.导入falsk_session,用来设置session信息，状态保持
 from flask_session import Session
 # 2.导入配置文件中的字典，
-from config import config
+from config import config,Config
 # 3.导入sqlachmy ，实例化对象，定义模型类
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask
+#13.6导入redis 类
+from redis import StrictRedis
+# 14，导入flask_wtf ,开启跨站保护
+from flask_wtf import CSRFProtect,csrf
+
 app =Flask(__name__)
+
+# 13.7实例化redis对象,用来存储和业务逻辑相关的数据，比如图片验证码，decode_response把redistribution的数据类型转成字符串
+redis_store = StrictRedis(host=Config.REDIS_HOST,port=Config.REDIS_PORT,decode_responses=True)
+
+
 
 
 # 7.1设置日志的记录等级,创建文件夹logs用于存储日志
@@ -36,8 +46,27 @@ def creat_app(config_name):
     db.init_app(app)
     # 5.1实例话session对象
     Session(app)
+    # 使用wtf 扩展实现csrf保护
+    CSRFProtect(app)
+    # 14.2使用请求钩子，在每次请求后，写入到客户端的cookie中，csrf_token
+    @app.after_request
+    def after_requst(response):
+        # 生成csrf——token字符串
+        csrf_token = csrf.generate_csrf()
+        response.set_cookie('csrf_token',csrf_token)
+        return response
+
+
+
+
     # 8.6导入蓝图对象，注册蓝图
     from info.modules.news import api
     app.register_blueprint(api)
+    # 12.再次导入蓝图
+    from info.modules.passport import passport_blue
+
+    app.register_blueprint(passport_blue)
+
+
     return app
 
