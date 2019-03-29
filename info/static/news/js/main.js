@@ -144,7 +144,32 @@ $(function(){
         }
 
         // 发起注册请求
+        // 构造请求参数
+        var params={
+		    'mobile':mobile ,
+            'smscode':smscode,
+            'password':password
+        }
+        //发送ajax请求
+        $.ajax({
+            url:'/passport/register',
+            type:'post',
+            data:JSON.stringify(params), //发送请求的参数和类型
+            contentType:'application/json',//前端接受的数据类型
+            header:{
+                //获取服务器给浏览器设置的cookie中的csrf_token,
+                //发送请求服务器，服务器会比较redis和ajax中的，实现csrf保护
+                'X-CSRFToken':getCookie('csrf_token'),
+            success:function (resp) {
+                if (resp.error == 0){
+                    location.reload()
+                } else {
 
+                }
+            }
+            }
+
+        })
     })
 })
 
