@@ -293,4 +293,16 @@ def login():
     session['user_id'] = user.id
     return jsonify(error=RET.OK,errmsg='登录成功')
 
-
+@passport_blue.route('/logout')
+def logout():
+    """
+    用户退出：如果是前后端分离，项目风格特点是RESTful（表现层状态转换），请求方法必须是delete
+    1.退出的本质是把用户缓存的用户信息清楚
+    2.不建议使用session.clear(),清楚所有信息，包括csrf
+    :return:
+    """
+    # pop有弹出的意思，这里指删除，根据键删信息，信息不存在，则删none
+    session.pop('user_id',None)
+    session.pop('mabile',None)
+    session.pop('nick_name',None)
+    return jsonify(error=RET.OK,errmsg='退出成功')
